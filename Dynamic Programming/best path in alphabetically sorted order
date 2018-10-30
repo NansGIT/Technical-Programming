@@ -1,0 +1,100 @@
+Find the best path from upper left corner to bottom right corner in a grid by
+moving right or down. The “best” path is the one with highest alphabetical order
+after sorted.
+
+Input grid:
+
+a n l
+f g s
+m t k
+
+Total number of steps to reach the destination from the source: m + n where m denotes rows and n denotes columns.
+
+I just figured that if we visit each cell only once it will take us only O(mn) time
+And working backwards we will get a complexity 2^(m+n) since we have two choices to make at each step 
+and m+n will be the total number of steps from the source to the destination
+
+Possible paths: nCk = n!/(n-k)!k! refer page 317 from cracking the coding interview book.
+
+afmtk         afkmt
+afgsk   sort  afgks
+afgtk    =>   afgkt
+anlsk         aklns
+angtk         agknt
+angsk         agkns
+
+output is the string in highest alphabetical after sorting: aklns
+
+There are two possible solutions with O(n^3logn) time complexity and O(n^3) complexity. This can be done better... with string hashing(an important concept).
+
+n^3logn solution:
+construct another m*n grid with all cells having an empty string and fill up the first row and first column.
+
+Algorithm: 
+Input: input is vector<vector<A>> with m rows and n columns
+
+The dp grid variable is named dp
+
+output: highest alphabetical string in sorted order:
+
+1. fill the first cell in the dp grid with the value in the input grid.
+2. start building the cells in the rest of the first row and first column with it. 
+3. Every empty cell in the dp grid from this point onwards, should be filled using the formulate, max(input[m-1][n], input[m][n-1]) (use string compare for this purpose) after they are sorted.
+4. once you append the current element to the end of the output of the max value and store it in the current cell on the dp grid, sort it. this makes the problem n^3logn.
+5. repeat this procedure for every cell in the grid.
+6. return dp[m-1][n-1] cell that has the highest alphabetical string.
+
+n^3 solution:
+
+1. fill the first cell in the dp grid with the value in the input grid.
+2. start building the cells in the rest of the first row and first column with it. 
+3. Every empty cell in the dp grid from this point onwards, should be filled using the formulate, max(input[m-1][n], input[m][n-1]) (use string compare for this purpose) after they are sorted.
+4. once you append the current element to the end of the output of the max value and store it in the current cell on the dp grid by appending or inserting the new character in the correct position (one extra pass) this will remove sorting and take only linear time. this makes the problem n^3logn.
+5. repeat this procedure for every cell in the grid.
+6. return dp[m-1][n-1] cell that has the highest alphabetical string.
+
+string appendThisInPlace(char a, string str){
+  string result = "";
+  for(int i = 0; i < str.size(); i++){
+    if(a <= str[i])
+      result = str.substr(0,i-1) + a + str.substr(i); 
+   return result;
+  }
+}
+
+string alphabetSorted(vector <vector <int>>  grid){
+  int m = grid.size();
+  int n = grid[0].size();
+  vector <vector<int>> dp(m,vector<int> (n,0));
+  dp[0][0] = grid[0][0];
+  for(int i = 1; i < m; i++)
+    dp[i][0] = appendThisInPlace(grid[i][0],dp[i-1][0]); //or use .append() but since strings in c++ are mutable, the concatenation operation is fine.
+  for(int i = 1; i < n; i++)
+    dp[0][i] = appendThisInPlace(grid[0][i],dp[0][i-1]);
+  for(int i = 1; i < m; i++){
+    for(int j = 1; j < n; j++){
+      if(strncmp(dp[i-1][j],dp[i][j-1]) > 0) 
+        dp[i][j] = appendThisInPlace(grid[i][j],dp[i-1][j]);
+      else if(strncmp(dp[i-1][j],dp[i][j-1]) <= 0)
+        dp[i][j] = appendThisInPlace(grid[i][j],dp[i][j-1]);
+    }
+  } 
+  return dp[m-1][n-1];
+}
+
+
+
+int main(){
+  vector<vector<char>> grid = {
+                {'a', 'b', 'c', 'd', 'i'},
+                {'f', 'g', 'h', 'e', 'n'},
+                {'k', 'l', 'm', 'j', 'o'},
+                {'p', 'q', 'r', 'k', 't'},
+                {'u', 'v', 'w', 'x', 'y'}
+        };
+   string result = alphabetSorted(grid);
+   cout << result << endl;
+   return 0;
+}
+
+

@@ -1,0 +1,50 @@
+
+Given two strings s and t, write a function to determine if t is an anagram of s.
+
+For example,
+s = "anagram", t = "nagaram", return true.
+s = "rat", t = "car", return false.
+
+Note:
+You may assume the string contains only lowercase alphabets.
+
+Follow up:
+What if the inputs contain unicode characters? How would you adapt your solution to such case?
+
+Solution 1: O(n) time and space
+bool isAnagram(string s, string t) {
+        if(s.length() != t.length()){
+            return false;
+        }
+        unordered_map<char, int> holder;
+        for(int i = 0; i < s.size(); i++){
+            holder[s[i] -'a']++;
+            holder[t[i] - 'a']--;
+        }
+        for(auto a : holder){
+            if(a.second != 0)
+                return false;
+        }
+        return true;
+    }
+
+Solution 1: variation:
+bool isAnagram(string s, string t) {
+        if (s.length() != t.length()) return false;
+        int n = s.length();
+        int counts[26] = {0};
+        for (int i = 0; i < n; i++) { 
+            counts[s[i] - 'a']++;
+            counts[t[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; i++)
+            if (counts[i]) return false;
+        return true;
+    }
+    
+Solution 2: O(nlogn) time and O(1) space
+bool isAnagram(string s, string t) { 
+        sort(s.begin(), s.end());
+        sort(t.begin(), t.end());
+        return s == t; 
+    }

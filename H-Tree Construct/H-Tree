@@ -1,0 +1,140 @@
+
+An H-tree is a geometric shape that consists of a repeating pattern resembles the letter “H”.
+
+It can be constructed by starting with a line segment of arbitrary length, drawing two segments of
+the same length at right angles to the first through its endpoints, and continuing in the same vein, 
+reducing (dividing) the length of the line segments drawn at each stage by √2.
+
+there are some examples of H-trees at different levels of depth in this folder for your reference.
+Write a function drawHTree that constructs an H-tree, given its center (x and y coordinates), a starting length, 
+and depth. Assume that the starting line is parallel to the X-axis.
+
+Use the function drawLine provided to implement your algorithm. In a production code, a drawLine function 
+would render a real line between two points. However, this is not a real production environment, so to make
+things easier, implement drawLine such that it simply prints its arguments (the print format is left to your discretion).
+
+Analyze the time and space complexity of your algorithm. In your analysis, assume that drawLine's time and
+space complexities are constant, i.e. O(1).
+
+
+1. given = start length and depth.
+2. A method drawLine whose time and space complexity is constant and it renders a real line between two points.
+2. find = all the points of the H's formed at every depth
+3. technique, recursively call the same method with different depths as inputs
+
+
+Solution:
+
+void drawHTree(int x, int y, double length, int depth){
+  if(depth == 0)
+    return;
+  
+  double x0 = x - length/2;
+  double y0 = y - length/2;
+  double x1 = x + length /2;
+  double y1 = y + length/2;
+  
+  drawLine(x0,y0,x0,y1));//let's assume that drawLine returns the arguments of this line.
+  drawLine(x1,y1,x1,y0));
+  drawLine(x0,y,x1,y));
+  
+  newLength = length/sqrt(2);
+  
+  //topleft HTree
+  drawHTree(x0,y0,newLength,depth-1);
+  //topright Htree
+  drawHTree(x0,y1,newLength,depth-1);
+  //bottomleft HTree
+  drawHTree(x1,y0,newLength,depth-1);
+  //bottomright HTree
+  drawHTree(x1,y1,newLength,depth-1);
+}
+
+Time complexity: 4^depth.
+Space: Space Complexity: recursive calls add overhead since we store them in the execution stack.
+The space occupied in the stack will be then O(D), in the worst case scenario. The stack space occupied 
+will be no more than O(D) at any given point since a sibling drawHTree will not be called before the current 
+one being executed returns (i.e. finishes its execution).
+
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+/*
+
+We need to code 2 functions: "drawHTree" and "DrawLine"
+
+- drawHTree -> Build an Htree
+- Drawline -> Simply cout the arguments of the function
+
+Input:
+
+- double: x, y, length, depth
+
+Constraints: x,y,length <= inf  -> depth <= 10
+
+---
+
+We are given some depth, and we need to build the Htree of this depth
+
+|-| -> return (-0.5,+0.5) , (-0.5,-0.5) , (+0.5,+0.5) , (+0.5,-0.5) (x,y = (0,0) if L = 1 depth = 1) 
+
+Case D = 2: Let's recursively call our Htree function given the x,y points of this edge and D++ and L = L/sqrt(2)
+
+Complexity -> Time: I am doing O(1) work in every Htree call -> O(4^D), space compl (of stack, not heap) -> O(D)
+
+Struct Point {
+ int x;
+ int y;
+ Point(int valX, int valY){
+  x = valX;
+  y = valY;
+ }
+};
+
+
+
+Pseudo:
+
+- Call Htree for the given input
+- Internally calculate the 4 relevant x,y pairs
+- Call DrawLine for each of the 4 points
+- Call Htree for each of the 4 points, putting the right D and L
+
+*/
+
+void drawLine(double x1, double y1, double x2, int y2){
+  
+  //printf("x1,y1: %d,%d | x2,y2: %d,%d", x1, y1, x2, y2);
+  cout << "x1,y1 | x2,y2 : " << x1 << "," << y1 << "," <<  x2 << "," << y2 << endl;
+}
+
+void drawHTree(double x, double y, double length, int depth){
+  
+  if(depth > 0){
+    
+    double x1 = x-(length/2);
+    double y1 = y-(length/2);
+    
+    double x2 = x+(length/2);
+    double y2 = y+(length/2);
+    
+    drawLine(x1,y1,x1,y2); //horizontal line - connecting segment
+    drawLine(x1,y,x2,y);
+    drawLine(x2,y1,x2,y2);
+    
+    double L_prime = length/sqrt(2);
+    drawHTree(x1, y1, L_prime, --depth);
+    drawHTree(x1, y2, L_prime, --depth);
+    drawHTree(x2, y1, L_prime, --depth);
+    drawHTree(x2, y2, L_prime, --depth);
+  }
+}
+
+int main()
+{   
+    drawHTree(0, 0, 1, 2);
+    return 0;
+}
+

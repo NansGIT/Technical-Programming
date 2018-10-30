@@ -1,0 +1,59 @@
+Given a set of strings, find the longest common prefix.
+
+Input  : {“geeksforgeeks”, “geeks”, “geek”, “geezer”}
+Output : "gee"
+
+Input  : {"apple", "ape", "april"}
+Output : "ap"
+
+Solution: 
+
+There are several different solutions to this problem with different time and space complexity. I will discuss 
+all the approaches one by one here.
+
+First Approach: Associative property.
+
+We start with an example. Suppose there are two strings- “geeksforgeeks” and “geeks”. What is the longest common prefix in both of them? It is “geeks”.
+
+Now let us introduce another word “geek”. So now what is the longest common prefix in these three words ? It is “geek”
+
+We can see that the longest common prefix holds the associative property, i.e-
+
+LCP(string1, string2, string3) 
+         = LCP (LCP (string1, string2), string3)
+
+Like here
+
+LCP (“geeksforgeeks”, “geeks”, “geek”)
+     =  LCP (LCP (“geeksforgeeks”, “geeks”), “geek”)
+     =  LCP (“geeks”, “geek”) = “geek”
+     
+Refer the image "longest_common_prefix_1.png" in this folder
+
+Code:
+
+string commonPrefixUntil(string result, string compare){
+    string prefix = "";
+    for(int i = 0; j = 0; i < prefix.size(); j < compare.size(); i++; j++){
+         if(result[i] != compare[j])
+             break;
+         else
+             prefix += result[i];
+    }
+    return prefix;
+}
+
+string commonPrefix(vector <string> arr) {
+    string result = arr[0];
+    for(int i = 1; i < arr.size(); i++) {
+         result = commonPrefixUntil(result,arr[i]);
+    }
+    return result;
+}
+
+Time Complexity : Since we are iterating through all the strings and for each string we are iterating though each characters, 
+so we can say that the time complexity is O(N M) where,
+N = Number of strings
+M = Length of the largest string string 
+Auxiliary Space : To store the longest prefix string we are allocating space which is O(M).
+
